@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-
 import axios from 'axios';
 
-const EditMovieForm = (props) => {
+const AddMovieForm = (props) => {
 	const { push } = useHistory();
-	
 
-
-	const { setMovies } = props;
 	const [movie, setMovie] = useState({
 		title:"",
 		director: "",
@@ -17,32 +13,25 @@ const EditMovieForm = (props) => {
 		metascore: 0,
 		description: ""
 	});
-
-    const { id } = useParams();
-
-    useEffect(()=>{
-        axios.get(`http://localhost:9000/api/movies/${id}`)
-            .then(res=>{
-                setMovie(res.data);
-            })
-	}, [id]);
 	
-	const handleChange = (e) => {
+	const handleChange = event => {
         setMovie({
             ...movie,
-            [e.target.name]: e.target.value
+            [event.target.name]: event.target.value
         });
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        axios.put(`http://localhost:9000/api/movies/${id}`, movie)
-            .then(res=>{
-                setMovies(res.data);
-                push(`/movies/${movie.id}`);
-			})
-			.catch(err=>{
-				console.log(err);
+
+    const handleSubmit = event => {
+		event.preventDefault();
+
+		axios.put(`http://localhost:9000/api/movies/`, movie)
+			.then(response => {
+				props.setMovies(response.data);
+				push(`/movies`);
+
+			}).catch(error => {
+				console.error(error);
 			})
 	}
 	
@@ -80,11 +69,11 @@ const EditMovieForm = (props) => {
 				</div>
 				<div className="modal-footer">			    
 					<input type="submit" className="btn btn-info" value="Save"/>
-					<Link to={`/movies/1`}><input type="button" className="btn btn-default" value="Cancel"/></Link>
+					<Link to={`/movies`}><input type="button" className="btn btn-default" value="Cancel"/></Link>
 				</div>
 			</form>
 		</div>
 	</div>);
 }
 
-export default EditMovieForm;
+export default AddMovieForm;
